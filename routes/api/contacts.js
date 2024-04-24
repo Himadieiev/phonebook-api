@@ -8,7 +8,7 @@ const handleJwtControler = require('../../middlewares/handleJwtControler');
 
 const router = express.Router();
 
-router.get('/', getAllContacts);
+router.get('/', handleJwtControler, getAllContacts);
 
 router.post('/', handleJwtControler, addContact);
 
