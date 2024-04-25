@@ -1,17 +1,14 @@
 const express = require('express');
 
-const setUser = require('../../user/setUser');
-const loginUser = require('../../user/loginUser');
-const logoutUser = require('../../user/logoutUser');
-
-const hendleJwtControler = require('../../middlewares/handleJwtControler');
+const { register, login, logout } = require('../../controllers/auth');
+const { authenticate } = require('../../middlewares');
 
 const router = express.Router();
 
-router.post('/register', setUser);
+router.post('/register', register);
 
-router.post('/login', loginUser);
+router.post('/login', login);
 
-router.post('/logout', hendleJwtControler, logoutUser);
+router.post('/logout', authenticate, logout);
 
 module.exports = router;

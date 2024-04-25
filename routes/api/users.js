@@ -1,14 +1,10 @@
 const express = require('express');
 
-const getUser = require('../../user/getUser');
-const updateUser = require('../../user/updateUser');
-
-const handleJwtControler = require('../../middlewares/handleJwtControler');
+const { getCurrent } = require('../../controllers/auth');
+const { authenticate } = require('../../middlewares');
 
 const router = express.Router();
 
-router.get('/current', handleJwtControler, getUser);
-
-router.patch('/edit', handleJwtControler, updateUser);
+router.get('/current', authenticate, getCurrent);
 
 module.exports = router;

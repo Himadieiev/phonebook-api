@@ -1,11 +1,10 @@
 const { Schema, model } = require('mongoose');
-
-const handleMongodbError = require('../helpers/handleMongodbError');
-
 const Joi = require('joi');
 
+const { handleMongooseError } = require('../helpers');
+
 // eslint-disable-next-line no-useless-escape
-const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?w+)*(\.\w{2,3})+$/;
+const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new Schema(
   {
@@ -16,7 +15,7 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      match: emailRegexp,
+      match: emailRegex,
       required: [true, 'Email is required'],
       unique: true,
     },
@@ -36,46 +35,29 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.post('save', handleMongodbError);
+userSchema.post('save', handleMongooseError);
 
-const joiUserSchema = Joi.object({
-  email: Joi.string().pattern(emailRegexp).required().empty(false).messages({
-    'string.base': 'The email must be a string.',
-    'any.required': 'The email field is required.',
-    'string.empty': 'The email must not be empty.',
-    'string.pattern.base': 'The email must be in format test@gmail.com.',
-  }),
-  password: Joi.string().min(3).required().messages({
-    'string.base': 'The password must be a string.',
-    'any.required': 'The password field is required.',
-    'string.min': 'min length of password must be 8',
-    'string.empty': 'The password must not be empty.',
-  }),
-  name: Joi.string().required().empty(false).messages({
-    'string.base': 'The name must be a string',
-    'any.required': 'the name faild is required',
-  }),
+const registerSchema = Joi.object({
+  name: Joi.string().min(5).required(),
+  password: Joi.string().min(8).required(),
+  email: Joi.string().pattern(emailRegex).required(),
 });
 
-const loginJoiSchema = Joi.object({
-  email: Joi.string().pattern(emailRegexp).required().empty(false).messages({
-    'string.base': 'The email must be a string.',
-    'any.required': 'The email field is required.',
-    'string.empty': 'The email must not be empty.',
-    'string.pattern.base': 'The email must be in format test@gmail.com.',
-  }),
-  password: Joi.string().min(3).required().empty(false).messages({
-    'string.base': 'The password must be a string.',
-    'any.required': 'The password field is required.',
-    'string.min': 'min length of password must be 8',
-    'string.empty': 'The password must not be empty.',
-  }),
+const emailSchema = Joi.object({
+  email: Joi.string().pattern(emailRegex).required(),
 });
 
-const User = model('users', userSchema);
+const loginSchema = Joi.object({
+  password: Joi.string().min(8).required(),
+  email: Joi.string().pattern(emailRegex).required(),
+});
 
-module.exports = {
-  User,
-  joiUserSchema,
-  loginJoiSchema,
+const schemas = {
+  registerSchema,
+  emailSchema,
+  loginSchema,
 };
+
+const User = model('user', userSchema);
+
+module.exports = { User, schemas };

@@ -1,17 +1,14 @@
 const express = require('express');
 
-const getAllContacts = require('../../contacts/getAllContact');
-const addContact = require('../../contacts/addContact');
-const deleteContact = require('../../contacts/deleteContact');
-
-const handleJwtControler = require('../../middlewares/handleJwtControler');
+const { getAll, add, deleteById } = require('../../controllers/contacts');
+const { isValidId, authenticate } = require('../../middlewares');
 
 const router = express.Router();
 
-router.get('/', handleJwtControler, getAllContacts);
+router.get('/', authenticate, getAll);
 
-router.post('/', handleJwtControler, addContact);
+router.post('/', authenticate, add);
 
-router.delete('/:contactId', handleJwtControler, deleteContact);
+router.delete('/:contactId', authenticate, isValidId, deleteById);
 
 module.exports = router;
