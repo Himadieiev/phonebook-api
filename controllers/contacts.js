@@ -2,7 +2,7 @@ const { Contact } = require('../models/contact');
 
 const { HttpError } = require('../helpers');
 
-const { schemas } = require('../models/contact');
+const { addContactSchema } = require('../models/contact');
 
 const getAll = async (req, res, next) => {
   try {
@@ -18,7 +18,7 @@ const getAll = async (req, res, next) => {
 
 const add = async (req, res, next) => {
   try {
-    const { error } = schemas.addSchema.validate(req.body);
+    const { error } = addContactSchema.validate(req.body);
     if (error) {
       throw HttpError(400, 'Missing required name field');
     }

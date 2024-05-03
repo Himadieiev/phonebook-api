@@ -21,7 +21,7 @@ const contactSchema = new Schema(
     },
     createdAt: {
       type: Date,
-      required: [true, 'created at is required'],
+      // required: [true, 'created at is required'],
     },
     updatedAt: {
       type: Date,
