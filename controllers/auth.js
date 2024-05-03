@@ -25,12 +25,22 @@ const register = async (req, res, next) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
-      ...req.body,
+    const newUser = {
+      name: req.body.name,
+      email: req.body.email,
       password: hashPassword,
-    });
+      token: null,
+    };
 
-    res.status(201).json({ id: newUser._id, name: newUser.name, email: newUser.email });
+    const { _id } = await User.create(newUser);
+
+    const payload = { id: _id };
+
+    const token = jwt.sign(payload, SECRET_WORD, { expiresIn: '23h' });
+
+    await User.findByIdAndUpdate(_id, { token });
+
+    res.status(201).json({ id: _id, name: newUser.name, email: newUser.email, token });
   } catch (error) {
     next(error);
   }
@@ -59,7 +69,7 @@ const login = async (req, res, next) => {
     const token = jwt.sign(payload, SECRET_WORD, { expiresIn: '23h' });
     await User.findByIdAndUpdate(user._id, { token });
 
-    res.json({ token, user: { email } });
+    res.json({ name: user.name, email: user.email, token });
   } catch (error) {
     next(error);
   }
@@ -68,15 +78,23 @@ const login = async (req, res, next) => {
 const logout = async (req, res) => {
   const { _id } = req.user;
 
-  await User.findByIdAndUpdate(_id, { token: null });
+  const user = await User.findByIdAndUpdate(_id, { token: null });
 
-  res.status(204).json();
+  if (!user) {
+    res.status(204);
+  }
+
+  res.status(201).json({
+    id: user._id,
+    email: user.email,
+    name: user.name,
+  });
 };
 
 const getCurrent = async (req, res) => {
-  const { email, subscription } = req.user;
+  const { _id, email, name, token } = req.user;
 
-  res.json({ email, subscription });
+  res.json({ _id, email, name, token });
 };
 
 module.exports = {
