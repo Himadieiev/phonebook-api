@@ -1,13 +1,13 @@
-const { Schema, model } = require('mongoose');
-const Joi = require('joi');
+const {Schema, model} = require("mongoose");
+const Joi = require("joi");
 
-const { handleMongooseError } = require('../helpers');
+const {handleMongooseError} = require("../helpers");
 
 const contactSchema = new Schema(
   {
     name: {
       type: String,
-      maxLength: 20,
+      maxLength: 30,
       required: true,
     },
     number: {
@@ -30,25 +30,25 @@ const contactSchema = new Schema(
   },
   {
     versionKey: false,
-  }
+  },
 );
 
-contactSchema.post('save', handleMongooseError);
+contactSchema.post("save", handleMongooseError);
 
 const addContactSchema = Joi.object({
-  name: Joi.string().max(20).required().messages({
-    'string.base': 'The name must be a string',
-    'string.max': 'The name must be max 20',
-    'any.required': 'The name field a required',
+  name: Joi.string().max(30).required().messages({
+    "string.base": "The name must be a string",
+    "string.max": "The name must be max 30",
+    "any.required": "The name field a required",
   }),
   number: Joi.string().max(15).required().messages({
-    'string.base': 'The number must be a string',
-    'string.max': 'The number must be max 15',
-    'any.required': 'The number field a required',
+    "string.base": "The number must be a string",
+    "string.max": "The number must be max 15",
+    "any.required": "The number field a required",
   }),
 });
 
-const Contact = model('contact', contactSchema);
+const Contact = model("contact", contactSchema);
 
 module.exports = {
   Contact,
